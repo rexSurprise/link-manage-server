@@ -34,7 +34,7 @@ def root():
 
 @app.route('/link', methods=['POST'])
 def link():
-    args = request.args
+    args = request.json
     url = args.get('url')
     res = parse_link_data(url)
     resp = {'code': 200, 'data': res} if res else {

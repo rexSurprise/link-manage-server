@@ -37,13 +37,16 @@ class Query(object):
         rows = options.get('rows', 20)
         page = options.get('page', 1)
         keyword = options.get('keyword', None)
+        sort = options.get('sort', 'DESC')
+        sortField = options.get('sortField', 'lid')
         search = ''
         args = [(page - 1) * rows, page * rows]
         if keyword is not None:
             search = "WHERE `title` LIKE %s OR `link` LIKE %s OR `DESCRIBE` LIKE %s "
             [args.insert(0, '%{}%'.format(keyword)) for i in range(3)]
-        sql = 'select * from links ' + search + ' limit %s,%s'
+        sql = 'select * from links ' + search + 'ORDER BY lid DESC limit %s,%s'
         print(sql)
+        print(args)
         return self.__select_db(sql, args)
 
     def select_count(self, options):
