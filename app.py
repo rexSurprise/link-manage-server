@@ -29,7 +29,7 @@ def resp_json(_dict):
 
 @app.route('/')
 def root():
-    return resp_json({})
+    return render_template('index.html')
 
 
 @app.route('/link', methods=['POST'])
@@ -102,10 +102,10 @@ def page_not_found(error):
     return resp
 
 
-@app.errorhandler(500)
-def page_not_found(error):
-    resp = resp_json({"code": "500"})
-    return resp
+# @app.errorhandler(500)
+# def page_not_found(error):
+#     resp = resp_json({"code": "500"})
+#     return resp
 
 
 if __name__ == '__main__':

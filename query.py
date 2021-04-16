@@ -38,15 +38,18 @@ class Query(object):
         page = options.get('page', 1)
         keyword = options.get('keyword', None)
         sort = options.get('sort', 'DESC')
-        sortField = options.get('sortField', 'lid')
+        sort_field = options.get('sortField', 'lid')
+        sort_field = 'uid' if sort_field == 'category' else sort_field
+        #  经测试存在SQL注入！ 修复ORDER BY的SQL注入
+        sort_field = 'lid' if not sort_field.isalpha() else sort_field
+        sort = 'DESC' if not sort.isalpha() else sort
         search = ''
-        args = [(page - 1) * rows, page * rows]
+        args = [(page - 1) * rows, rows]
         if keyword is not None:
             search = "WHERE `title` LIKE %s OR `link` LIKE %s OR `DESCRIBE` LIKE %s "
             [args.insert(0, '%{}%'.format(keyword)) for i in range(3)]
-        sql = 'select * from links ' + search + 'ORDER BY lid DESC limit %s,%s'
-        print(sql)
-        print(args)
+        sql = 'select * from links ' + search + f"ORDER BY `{sort_field}` {sort} limit %s,%s"
+        # print(sql)
         return self.__select_db(sql, args)
 
     def select_count(self, options):
@@ -58,7 +61,7 @@ class Query(object):
             search = "WHERE `title` LIKE %s OR `link` LIKE %s OR `DESCRIBE` LIKE %s "
             args = [keyword, keyword, keyword]
         sql = 'select count(*)  AS total from links ' + search
-        print(sql)
+
         return self.__select_db(sql, args)
 
     def add_item(self, data):
